@@ -10,6 +10,32 @@ import (
 	"log"
 )
 
+type AircraftData map[string]Aircraft
+
+type Aircraft struct {
+	Adshex           string  `json:"adshex"`
+	Callsign         string  `json:"callsign"`
+	OriginalCallsign *string `json:"original_callsign"`
+	Altitude         int     `json:"altitude"`
+	Heading          int     `json:"heading"`
+	VertRate         int     `json:"vert_rate"`
+	Speed            int     `json:"speed"`
+	Squawk           string  `json:"squawk"`
+	Category         string  `json:"category"`
+	IsOnGround       bool    `json:"is_on_ground"`
+	DataSource       int     `json:"data_source"`
+	LastSeenTime     int     `json:"last_seen_time"`
+	PosUpdateTime    int     `json:"pos_update_time"`
+	FlightNumber     string  `json:"flight_number"`
+	Route            *string `json:"route"`
+	IsBlocked        bool    `json:"is_blocked"`
+	Reg              string  `json:"reg"`
+	AcType           string  `json:"ac_type"`
+	Lat              float64 `json:"lat"`
+	Lon              float64 `json:"lon"`
+	StationID        string  `json:"station_id"`
+}
+
 const (
 	dle = 0x10
 	stx = 0x02
@@ -77,20 +103,20 @@ func main() {
 			} else {
 				// json will contain the json that needs parsing/processing
 				// Suggest processing on different thread to not hold this up!
-				//log.Println(string(json))
-				var dat map[string]interface{}
-
-				if err := json.Unmarshal(jsonData, &dat); err != nil {
+				var data AircraftData
+				err := json.Unmarshal(jsonData, &data)
+				if err != nil {
 					panic(err)
 				}
 
-				for key, value := range dat {
-					mapData := value.(map[string]interface{})
-					callsign, _ := mapData["callsign"]
-					reg, _ := mapData["reg"]
-					lat, _ := mapData["lat"]
-					lon, _ := mapData["lon"]
-					log.Println(key, reg, callsign, lat, lon)
+				for key, value := range data {
+					log.Println(
+						key,
+						value.Reg,
+						value.Callsign,
+						value.Lat,
+						value.Lon)
+
 				}
 			}
 		}
